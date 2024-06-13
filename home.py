@@ -22,8 +22,14 @@ if "info" not in st.session_state:
 if "data" not in st.session_state:
     st.session_state.data = None
 
-if "assistant" not in st.session_state:
-    st.session_state.assistant = None
+if "assistant_id" not in st.session_state:
+    st.session_state.assistant_id = None
+
+if "thread_id" not in st.session_state:
+    st.session_state.thread_id = None
+
+if "iteration" not in st.session_state:
+    st.session_state.iteration = 0
 
 if "queries_generated" not in st.session_state:
     st.session_state.queries_generated = None
@@ -194,10 +200,14 @@ if st.session_state.data is not None:
     if st.button("Submit"):
         # get the data
         data = st.session_state.data
-        assistant = st.session_state.assistant
+        assistant_id = st.session_state.assistant_id
+        thread_id = st.session_state.thread_id
+        iteration = st.session_state.iteration
 
-        assistant_id, messages = run(client, assistant, 0, question, st.session_state.system_prompt, "_tmp.txt")
-        st.session_state.assistant = assistant_id
+        assistant_id, thread_id, messages = run(client, assistant_id, thread_id, iteration, question, st.session_state.system_prompt, "_tmp.txt")
+        st.session_state.assistant_id = assistant_id
+        st.session_state.thread_id = thread_id
+        st.session_state.iteration += 1
         st.write(messages)
 
         # display the answer

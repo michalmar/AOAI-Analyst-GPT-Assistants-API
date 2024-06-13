@@ -189,7 +189,7 @@ class EventHandler(AssistantEventHandler):
             
 
 # TODO: add also existing_thread_id to allow follow up questions
-def run(client, existing_assistant_id, id, query, system_prompt, file_path="world_population.txt"):
+def run(client, existing_assistant_id, existing_thread_id, id, query, system_prompt, file_path="world_population.txt"):
     """
     This function creates or retrieves an assistant, creates a thread, adds a user message to the thread, and runs the assistant to generate a response.
 
@@ -266,9 +266,12 @@ def run(client, existing_assistant_id, id, query, system_prompt, file_path="worl
     log(f"Assistant {'loaded' if existing_assistant_id else 'created'} with ID: {assistant_id}")  
 
     #step 2: Create a thread 
-    log("Creating a Thread for a new user conversation.....")
-    thread = client.beta.threads.create()
-    # log(f"Thread created with ID: {thread.id}")
+    if existing_thread_id:
+        thread = client.beta.threads.retrieve(thread_id=existing_thread_id) 
+        log(f"Continuing with thread ID: {thread.id}")
+    else:
+        thread = client.beta.threads.create()
+        log(f"Thread created with ID: {thread.id}")
 
     #step add a message to the thread 
     # user_message="create a barchart of Expected Age (Born) by Gender our data file"
@@ -297,7 +300,7 @@ def run(client, existing_assistant_id, id, query, system_prompt, file_path="worl
     messages = client.beta.threads.messages.list(
         thread_id=thread.id
     )
-    return assistant_id, messages
+    return assistant_id, thread.id, messages
 
 def main():
 
