@@ -5,7 +5,7 @@ import json
 from openai import AzureOpenAI
 from dotenv import load_dotenv
 
-load_dotenv(".env")
+load_dotenv(override=True)
 
 from assistants import run
 
